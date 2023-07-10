@@ -1,0 +1,24 @@
+
+// 最终打包结果
+(function (modules) {
+  function require (id) {
+    const [fn, mapping] = modules[id]
+    const module = {
+      exports: {}
+    }
+    const loacalRequire = (filePath) => {
+      const id = mapping[filePath]
+      return require(id)
+    }
+    fn(loacalRequire, module, module.exports)
+    return module.exports
+  }
+  require(0)
+})({
+    <% data.forEach(info => { %>
+      <%- info.id  %>: [function (require, module, exports) {
+        <%- info.code  %> 
+      }, <%- JSON.stringify(info.mapping) %>],
+    <%}) %>
+  }
+)

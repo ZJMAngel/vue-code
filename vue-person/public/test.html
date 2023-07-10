@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- <div id='app'>
+    <pre>{{obj.name}}</pre>
+  </div> -->
+  <script>
+    const obj = {a: 'a', b: 'b', c: 'c'}
+    
+    const queue = []
+    const has = {}
+    const nextTick = (watcher) => {
+      if (!has[watcher.id]) {
+        has[watcher.id] = true
+        queue.push(watcher)
+        // flushSchedulerQueue()
+        Promise.resolve().then(flushSchedulerQueue)
+      }
+    }
+
+    function flushSchedulerQueue() {
+      queue.forEach(watcher => watcher.run())
+    }
+
+    const watcher = {
+      id: 0,
+      update() {
+        nextTick(this)
+      },
+      run: () => {
+        console.log(`渲染页面：${JSON.stringify(obj)}`)
+      }
+    }
+
+    Object.keys(obj).forEach(key => {
+      let oldValue = obj[key]
+      Object.defineProperty(obj, key, {
+        get () {
+          return oldValue
+        },
+        set (value) {
+          oldValue = value
+          watcher.update()
+        }
+      })
+    })
+
+    obj.a = 'a1'
+    obj.a = 'a2'
+    obj.a = 'a3'
+  </script>
+</body>
+</html>
